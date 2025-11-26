@@ -9,7 +9,7 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// Example login endpoint — same as your Flutter client expects
+// ===== Login endpoint =====
 app.post('/auth/google/android', async (req, res) => {
     const { idToken, role } = req.body;
     if (!idToken || !role) {
@@ -19,8 +19,9 @@ app.post('/auth/google/android', async (req, res) => {
     try {
         const user = await verifyGoogleToken(idToken);
         const userID = user.googleUserId;
-        // TODO: Actually create/find user in your DB, assign a real token
-        const fakeJwt = 'FAKE_JWT_FOR_DEMO';  // Replace with real JWT in production
+
+        // For now: fake token — replace with real JWT when ready
+        const fakeJwt = 'FAKE_JWT_FOR_DEMO';
 
         return res.json({
             message: `Successfully logged in as ${role}`,
@@ -29,7 +30,7 @@ app.post('/auth/google/android', async (req, res) => {
             userID,
         });
     } catch (err) {
-        console.error('Error verifying Google ID token', err);
+        console.error('Error verifying Google ID token:', err);
         return res.status(401).json({
             message: 'Authentication failed',
             error: err.toString(),
@@ -37,10 +38,10 @@ app.post('/auth/google/android', async (req, res) => {
     }
 });
 
-// Example profile fetch route — optional (just placeholder)
+// ===== Profile fetch endpoint (placeholder) =====
 app.get('/manager/getBasicProfile/:userId', (req, res) => {
     const { userId } = req.params;
-    // TODO: fetch real profile from DB — here we return dummy
+    // TODO: replace with real DB lookup
     res.json({
         userId,
         accCreated: 0,
@@ -48,7 +49,10 @@ app.get('/manager/getBasicProfile/:userId', (req, res) => {
     });
 });
 
+// ===== Bind server to correct host/port for Render =====
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Backend server listening on port ${PORT}`);
+const HOST = '0.0.0.0';
+
+app.listen(PORT, HOST, () => {
+    console.log(`Backend server listening on ${HOST}:${PORT}`);
 });
